@@ -49,7 +49,8 @@
 
   .catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:56px;}
   .prod-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  .prod-img{height:120px;position:relative;}
+  .prod-img{height:120px;position:relative;overflow:hidden;}
+  .prod-img img{width:100%;height:100%;object-fit:cover;display:block;}
   .prod-badge{position:absolute;top:10px;left:10px;background:var(--amber);color:#fff;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:12px;}
   .prod-body{padding:14px 16px;}
   .prod-body h3{font-size:.98rem;font-weight:600;}
@@ -118,13 +119,20 @@
 
 <script>
   let products = [
-    { id:1, name:'Casaca de cuero clásica', cat:'Casacas', price:420, stock:14, offer:true },
-    { id:2, name:'Botín industrial reforzado', cat:'Calzado', price:180, stock:3, offer:false },
-    { id:3, name:'Correa de cuero trenzada', cat:'Accesorios', price:65, stock:0, offer:false },
-    { id:4, name:'Chaleco de cuero acolchado', cat:'Casacas', price:310, stock:8, offer:false },
-    { id:5, name:'Mocasín formal', cat:'Calzado', price:150, stock:22, offer:true },
-    { id:6, name:'Billetera bifold', cat:'Accesorios', price:45, stock:5, offer:false },
+    { id:1, name:'Casaca de cuero clásica', cat:'Casacas', price:420, stock:14, offer:true, img:'andina-1' },
+    { id:2, name:'Botín industrial reforzado', cat:'Calzado', price:180, stock:3, offer:false, img:'andina-2' },
+    { id:3, name:'Correa de cuero trenzada', cat:'Accesorios', price:65, stock:0, offer:false, img:'andina-3' },
+    { id:4, name:'Chaleco de cuero acolchado', cat:'Casacas', price:310, stock:8, offer:false, img:'andina-4' },
+    { id:5, name:'Mocasín formal', cat:'Calzado', price:150, stock:22, offer:true, img:'andina-5' },
+    { id:6, name:'Billetera bifold', cat:'Accesorios', price:45, stock:5, offer:false, img:'andina-6' },
   ];
+
+  // Si "img" tiene extensión de archivo, se asume una foto real subida junto al index.html.
+  // Si no, se usa una imagen de muestra (Picsum) para la demo.
+  function imgUrl(seed, w=300, h=200){
+    if(/\.(jpg|jpeg|png|webp)$/i.test(seed)) return seed;
+    return `https://picsum.photos/seed/${seed}/${w}/${h}`;
+  }
 
   let currentCat = 'todos';
 
@@ -156,10 +164,10 @@
     const list = products.filter(p=>currentCat==='todos'||p.cat===currentCat);
     document.getElementById('catalogGrid').innerHTML = list.map(p=>{
       const s = stockInfo(p.stock);
-      const bg = ['#DCD3BC','#E6D3AE','#D7DED4','#E2D6D6'][p.id % 4];
       return `
       <div class="prod-card">
-        <div class="prod-img" style="background:${bg}">
+        <div class="prod-img">
+          <img src="${imgUrl(p.img)}" alt="${p.name}">
           ${p.offer ? '<span class="prod-badge">OFERTA</span>' : ''}
         </div>
         <div class="prod-body">
