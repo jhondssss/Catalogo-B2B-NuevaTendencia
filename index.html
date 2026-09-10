@@ -1,1 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribuidora Andina — Catálogo B2B</title>
+<meta name="description" content="Demo: catálogo B2B con stock en tiempo real, ofertas y panel de administrador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE8DC; --paper-2:#E4DECE; --card:#F5F2E8;
+    --ink:#201D17; --ink-soft:#5B564A;
+    --amber:#C98A2C; --teal:#1F6F5C; --red:#B23B3B;
+    --line:#DED9CD;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.brand{font-family:'Space Grotesk',sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px;}
+  a{color:inherit;}
 
+  .demo-banner{background:var(--ink);color:var(--paper);text-align:center;font-size:.83rem;padding:8px 16px;}
+  .demo-banner strong{font-weight:700;}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid var(--line);}
+  .brand{font-weight:700;font-size:1.2rem;}
+  .brand span{color:var(--amber);}
+  .role-pill{font-size:.8rem;color:var(--ink-soft);border:1px solid var(--line);padding:5px 12px;border-radius:20px;}
+
+  .hero{padding:36px 0 20px;}
+  .hero h1{font-size:1.7rem;font-weight:700;max-width:26ch;}
+  .hero p{color:var(--ink-soft);margin-top:8px;font-size:.98rem;}
+
+  .view-toggle{display:flex;gap:8px;margin:20px 0 28px;}
+  .view-toggle button{
+    font-family:'Inter',sans-serif;font-size:.88rem;font-weight:500;
+    padding:9px 18px;border-radius:20px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink-soft);cursor:pointer;
+  }
+  .view-toggle button.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+  .filters button{
+    font-family:'Inter',sans-serif;font-size:.85rem;padding:8px 15px;border-radius:8px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-soft);cursor:pointer;
+  }
+  .filters button.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+  .catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:56px;}
+  .prod-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .prod-img{height:120px;position:relative;}
+  .prod-badge{position:absolute;top:10px;left:10px;background:var(--amber);color:#fff;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:12px;}
+  .prod-body{padding:14px 16px;}
+  .prod-body h3{font-size:.98rem;font-weight:600;}
+  .prod-price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;margin-top:6px;}
+  .prod-stock{font-size:.8rem;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);}
+  .prod-stock.ok{color:var(--teal);} .prod-stock.low{color:var(--amber);} .prod-stock.out{color:var(--red);}
+
+  @media (max-width:900px){.catalog-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:600px){.catalog-grid{grid-template-columns:1fr;}}
+
+  /* Admin */
+  .admin-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:56px;}
+  table{width:100%;border-collapse:collapse;}
+  th,td{text-align:left;padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--line);}
+  th{background:var(--paper-2);font-weight:600;color:var(--ink-soft);font-size:.78rem;}
+  tr:last-child td{border-bottom:none;}
+  input[type=number]{width:60px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-family:'Inter',sans-serif;}
+  .toggle-oferta{
+    font-size:.78rem;padding:6px 12px;border-radius:14px;border:1px solid var(--line);
+    background:var(--paper);cursor:pointer;color:var(--ink-soft);
+  }
+  .toggle-oferta.on{background:var(--amber);color:#fff;border-color:var(--amber);}
+  .hidden{display:none;}
+
+  footer{border-top:1px solid var(--line);padding:22px 0;font-size:.82rem;color:var(--ink-soft);text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="demo-banner">📦 <strong>Proyecto demo</strong> — catálogo B2B con stock y ofertas, sin backend real.</div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">Distribuidora <span>Andina</span></div>
+    <span class="role-pill" id="roleLabel">Vista: Cliente</span>
+  </header>
+
+  <section class="hero">
+    <h1>Catálogo con stock y ofertas actualizadas al instante.</h1>
+    <p>Pensado para clientes ya asignados a un vendedor — sin registro público, sin carrito de compra abierto.</p>
+
+    <div class="view-toggle">
+      <button class="active" id="btn-cliente" onclick="setView('cliente')">Vista cliente</button>
+      <button id="btn-admin" onclick="setView('admin')">Vista administrador</button>
+    </div>
+  </section>
+
+  <!-- VISTA CLIENTE -->
+  <div id="view-cliente">
+    <div class="filters" id="filters"></div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+  </div>
+
+  <!-- VISTA ADMIN -->
+  <div id="view-admin" class="hidden">
+    <div class="admin-card">
+      <table>
+        <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Oferta</th></tr></thead>
+        <tbody id="adminBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>Demo construida con HTML, CSS y JavaScript — sin frameworks, alojada en GitHub Pages.</footer>
+</div>
+
+<script>
+  let products = [
+    { id:1, name:'Casaca de cuero clásica', cat:'Casacas', price:420, stock:14, offer:true },
+    { id:2, name:'Botín industrial reforzado', cat:'Calzado', price:180, stock:3, offer:false },
+    { id:3, name:'Correa de cuero trenzada', cat:'Accesorios', price:65, stock:0, offer:false },
+    { id:4, name:'Chaleco de cuero acolchado', cat:'Casacas', price:310, stock:8, offer:false },
+    { id:5, name:'Mocasín formal', cat:'Calzado', price:150, stock:22, offer:true },
+    { id:6, name:'Billetera bifold', cat:'Accesorios', price:45, stock:5, offer:false },
+  ];
+
+  let currentCat = 'todos';
+
+  function categories(){ return ['todos', ...new Set(products.map(p=>p.cat))]; }
+
+  function setView(v){
+    document.getElementById('view-cliente').classList.toggle('hidden', v!=='cliente');
+    document.getElementById('view-admin').classList.toggle('hidden', v!=='admin');
+    document.getElementById('btn-cliente').classList.toggle('active', v==='cliente');
+    document.getElementById('btn-admin').classList.toggle('active', v==='admin');
+    document.getElementById('roleLabel').textContent = v==='cliente' ? 'Vista: Cliente' : 'Vista: Administrador';
+    if(v==='admin') renderAdmin();
+  }
+
+  function renderFilters(){
+    document.getElementById('filters').innerHTML = categories().map(c=>
+      `<button class="${c===currentCat?'active':''}" onclick="setCat('${c}')">${c[0].toUpperCase()+c.slice(1)}</button>`
+    ).join('');
+  }
+  function setCat(c){ currentCat=c; renderFilters(); renderCatalog(); }
+
+  function stockInfo(stock){
+    if(stock<=0) return {cls:'out', label:'Agotado'};
+    if(stock<=5) return {cls:'low', label:`${stock} unidades — stock bajo`};
+    return {cls:'ok', label:`${stock} unidades disponibles`};
+  }
+
+  function renderCatalog(){
+    const list = products.filter(p=>currentCat==='todos'||p.cat===currentCat);
+    document.getElementById('catalogGrid').innerHTML = list.map(p=>{
+      const s = stockInfo(p.stock);
+      const bg = ['#DCD3BC','#E6D3AE','#D7DED4','#E2D6D6'][p.id % 4];
+      return `
+      <div class="prod-card">
+        <div class="prod-img" style="background:${bg}">
+          ${p.offer ? '<span class="prod-badge">OFERTA</span>' : ''}
+        </div>
+        <div class="prod-body">
+          <h3>${p.name}</h3>
+          <div class="prod-price">Bs ${p.price}</div>
+          <div class="prod-stock ${s.cls}">${s.label}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAdmin(){
+    document.getElementById('adminBody').innerHTML = products.map(p=>`
+      <tr>
+        <td>${p.name}</td>
+        <td>${p.cat}</td>
+        <td>Bs ${p.price}</td>
+        <td><input type="number" value="${p.stock}" min="0" onchange="updateStock(${p.id}, this.value)"></td>
+        <td><button class="toggle-oferta ${p.offer?'on':''}" onclick="toggleOffer(${p.id})">${p.offer?'En oferta':'Marcar oferta'}</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function updateStock(id, val){
+    const p = products.find(x=>x.id===id);
+    p.stock = Math.max(0, parseInt(val)||0);
+    renderCatalog();
+  }
+  function toggleOffer(id){
+    const p = products.find(x=>x.id===id);
+    p.offer = !p.offer;
+    renderAdmin();
+    renderCatalog();
+  }
+
+  renderFilters();
+  renderCatalog();
+</script>
+</body>
+</html>
